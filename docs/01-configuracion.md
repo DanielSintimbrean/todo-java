@@ -53,16 +53,22 @@ Java ejecuta el backend. `vp` es la CLI de Vite+ y gestiona las herramientas del
 
 ## 3. Genera el esqueleto Java
 
-En [Spring Initializr](https://start.spring.io/) selecciona Maven, Java, empaquetado Jar, Java 25 y Spring Boot 4.1.1. Usa estos datos:
+Genera el backend con Spring Boot CLI desde la raíz. `mise exec` descarga y usa la CLI solo para este comando; no hace falta añadirla a `mise.toml`:
 
-- Group: `com.example`.
-- Artifact y Name: `todo`.
-- Package name: `com.example.todo`.
-- Dependencia: Spring Web, basada en Spring MVC.
+```sh
+mise exec spring-boot@4.1.1 -- spring init \
+  --build=maven \
+  --boot-version=4.1.1 \
+  --java-version=25 \
+  --group-id=com.example \
+  --artifact-id=todo \
+  --name=todo \
+  --package-name=com.example.todo \
+  --dependencies=web \
+  backend
+```
 
-Descarga el ZIP y extrae su contenido en `backend/`, de forma que exista `backend/pom.xml`, sin otra carpeta `todo/` intermedia.
-
-Si Initializr ya no ofrece esa versión concreta, genera un proyecto de Boot 4 con Java 25 y ajusta el `pom.xml` al siguiente antes de compilar. Conserva `mvnw`, `mvnw.cmd` y `.mvn/` del ZIP. Sustituye `backend/pom.xml` por esta versión mínima:
+El comando crea el proyecto extraído en `backend/`. Si Spring Initializr ya no ofrece Boot 4.1.1, genera uno de Boot 4 con Java 25 y ajusta el `pom.xml` al siguiente antes de compilar. Conserva `mvnw`, `mvnw.cmd` y `.mvn/` que se hayan generado. Sustituye `backend/pom.xml` por esta versión mínima:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
