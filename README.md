@@ -29,9 +29,8 @@ Swagger UI: http://localhost:8080/swagger-ui.html
 | `mise run api:generate` | Regenera `backend/openapi.json` desde un test y `frontend/src/api/schema.d.ts` a partir de él |
 | `mise run check` | Lo que correría CI: `mvnw verify`, `vp check`, `vp test`, `vp build` y `git diff --exit-code` sobre los ficheros generados |
 
-`vp` es el vite-plus local del frontend (versión fijada en `frontend/pnpm-workspace.yaml`). Las tareas
-lo ejecutan con `pnpm exec vp ...`; dentro de `frontend/` puedes hacer lo mismo (`pnpm exec vp test`) o usar
-los scripts de `package.json` (`pnpm dev`, `pnpm build`).
+Dentro del repo, `mise` pone `frontend/node_modules/.bin` en el `PATH`, así que `vp` es siempre el
+vite-plus local del proyecto (versión fijada en `frontend/pnpm-workspace.yaml`).
 
 ## Estructura
 
