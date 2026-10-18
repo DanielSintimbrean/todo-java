@@ -43,6 +43,7 @@ public class TodoController {
 
     @GetMapping
     @Operation(summary = "Lista los TODOs, opcionalmente filtrados por estado")
+    @ApiResponse(responseCode = "200", description = "OK")
     public List<TodoResponse> list(@RequestParam(required = false) @Nullable TodoStatus status) {
         return todoService.list(status);
     }

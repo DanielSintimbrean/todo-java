@@ -147,8 +147,9 @@ class TodoApiIntegrationTest {
                 .expectBody()
                 .jsonPath("$.status")
                 .isEqualTo(400)
+                // El texto del mensaje depende del Accept-Language, así que solo comprobamos que está.
                 .jsonPath("$.errors.title")
-                .isEqualTo("must not be blank");
+                .isNotEmpty();
 
         assertThat(repository.count()).isZero();
     }

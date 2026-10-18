@@ -13,6 +13,8 @@ import org.jspecify.annotations.Nullable;
  * la actual, alguien lo cambió antes y respondemos 409 en lugar de pisar su cambio.
  */
 public record UpdateTodoRequest(
-        @Nullable @Size(max = 200) @Pattern(regexp = ".*\\S.*", message = "must not be blank") String title,
+        // Como @NotBlank, pero dejando pasar null (= no cambiar el título). Reutiliza su mensaje traducido.
+        @Nullable @Size(max = 200) @Pattern(regexp = ".*\\S.*", message = "{jakarta.validation.constraints.NotBlank.message}")
+                String title,
         @Nullable Boolean completed,
         @NotNull @Schema(description = "Versión del TODO que el cliente está editando") Long version) {}

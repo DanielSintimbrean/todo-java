@@ -21,6 +21,19 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/TodoResponse"
+                  }
+                }
+              }
+            },
+            "description" : "OK"
+          },
           "400" : {
             "content" : {
               "application/problem+json" : {
