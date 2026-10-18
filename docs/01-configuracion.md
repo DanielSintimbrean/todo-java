@@ -149,13 +149,20 @@ Debes ver `BUILD SUCCESS`. La primera ejecución descarga Maven y dependencias.
 Desde la raíz:
 
 ```sh
-mise exec -- vp create vite --directory frontend --package-manager pnpm --no-git --no-hooks --no-agent --no-editor -- --template react-ts
+vp create vite \
+  --package-manager pnpm \
+  --no-git --no-hooks --no-agent --no-editor --no-interactive \
+  -- frontend --template react-ts --no-interactive
 cd frontend
-mise exec -- vp install
-mise exec -- vp dev
+vp install
+vp dev
 ```
 
-El comando de creación y sus opciones están descritos en la [documentación de Vite+](https://viteplus.dev/guide/create). Si el generador pregunta, confirma React con TypeScript y pnpm. Los valores por defecto del generador pueden cambiar; las versiones finales del repositorio se fijan en el capítulo 16.
+`vite` ejecuta el generador `create-vite`. Los argumentos después de `--` se pasan a ese generador: `frontend` indica la carpeta de destino y `--template react-ts` selecciona React con TypeScript. Los dos `--no-interactive` desactivan las preguntas de Vite+ y de `create-vite`, respectivamente.
+
+La opción `--directory` solo funciona con las plantillas integradas de Vite+ y las plantillas empaquetadas de organizaciones. Usarla con `vite` provoca el error `The --directory option is only available for builtin and bundled @org templates`. Esta distinción está descrita en la [documentación de Vite+](https://viteplus.dev/guide/create).
+
+Los valores por defecto del generador pueden cambiar; las versiones finales del repositorio se fijan en el capítulo 16.
 
 Abre la dirección que indique Vite+, normalmente `http://localhost:5173`. De momento basta con ver la plantilla. Detén el servidor con Ctrl+C.
 
