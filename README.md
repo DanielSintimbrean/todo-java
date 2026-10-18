@@ -66,6 +66,8 @@ frontend/src/
   [`ApiProblem`](backend/src/main/java/com/example/todo/web/ApiProblem.java).
 - **Versiones:** Spring Boot 4.1.1 con springdoc-openapi 3.1.1 (la línea 3.x es la de Boot 4; la 3.1 está
   construida contra Boot 4.1).
+- **JUnit:** Spring Boot 4.1 gestiona JUnit **6** (Jupiter), no JUnit 5. La API de Jupiter es la misma
+  (`@Test`, `@BeforeEach`...), así que se usa la versión que trae Boot en vez de forzar una anterior.
 
 ## Notas para quien viene de C#/EF
 
