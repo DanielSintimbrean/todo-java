@@ -9,6 +9,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Version;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
@@ -54,12 +55,18 @@ public class Todo {
 
     @PrePersist
     void onCreate() {
-        createdAt = updatedAt = Instant.now();
+        createdAt = updatedAt = now();
     }
 
     @PreUpdate
     void onUpdate() {
-        updatedAt = Instant.now();
+        updatedAt = now();
+    }
+
+    // Postgres guarda microsegundos y Instant.now() trae nanosegundos: sin truncar, la respuesta
+    // de un POST/PATCH tendría más precisión que la misma fecha leída después con un GET.
+    private static Instant now() {
+        return Instant.now().truncatedTo(ChronoUnit.MICROS);
     }
 
     public void rename(String title) {
