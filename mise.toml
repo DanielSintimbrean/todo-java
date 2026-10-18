@@ -1,12 +1,14 @@
+# Vite+ (`vp`) no está bien empaquetado en el registro de mise (`vp` = npm:vite-plus, sin la CLI nativa),
+# así que se instala con este plugin de la comunidad, que replica el instalador oficial.
+# Ver https://github.com/voidzero-dev/vite-plus/issues/943
+[plugins]
+vite-plus = "https://github.com/markmals/mise-vite-plus"
+
+# mise gestiona Java y `vp`. Node y pnpm los gestiona `vp`, con las versiones de
+# `devEngines` en frontend/package.json.
 [tools]
 java = "temurin-25"
-node = "lts"
-pnpm = "latest"
-
-[env]
-# Dentro del repo, `vp` resuelve al vite-plus local del frontend (versión fijada en
-# frontend/pnpm-workspace.yaml) en lugar de al vp global, que usaría su propio Vitest.
-_.path = ["{{config_root}}/frontend/node_modules/.bin"]
+vite-plus = "1.3.0"
 
 # ---------------------------------------------------------------------------
 # Tareas: `mise tasks` las lista, `mise run <tarea>` las ejecuta.

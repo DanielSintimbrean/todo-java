@@ -5,14 +5,14 @@ Proyecto de aprendizaje de Java moderno: TODO app full-stack.
 - **Backend:** Java 25 + Spring Boot 4 (Spring MVC, virtual threads), Maven, Spring Data JPA, Flyway, PostgreSQL
 - **Contrato:** springdoc → `backend/openapi.json` (versionado) → openapi-typescript
 - **Frontend:** React + TypeScript + Vite+ (`vp`), TanStack Router + Query, openapi-fetch + openapi-react-query, Tailwind + shadcn/ui
-- **Tooling:** mise + pnpm
+- **Tooling:** mise (Java y `vp`) + Vite+ (Node y pnpm)
 
 ## Arrancar
 
 Requisitos: [mise](https://mise.jdx.dev) y Docker (Postgres en local y Testcontainers en los tests).
 
 ```sh
-mise install      # Java 25 (Temurin), Node LTS y pnpm
+mise install      # Java 25 (Temurin) y la CLI de Vite+ (vp)
 mise run dev      # backend en :8080 + frontend en :5173
 ```
 
@@ -29,8 +29,16 @@ Swagger UI: http://localhost:8080/swagger-ui.html
 | `mise run api:generate` | Regenera `backend/openapi.json` desde un test y `frontend/src/api/schema.d.ts` a partir de él |
 | `mise run check` | Lo que correría CI: `mvnw verify`, `vp check`, `vp test`, `vp build` y `git diff --exit-code` sobre los ficheros generados |
 
-Dentro del repo, `mise` pone `frontend/node_modules/.bin` en el `PATH`, así que `vp` es siempre el
-vite-plus local del proyecto (versión fijada en `frontend/pnpm-workspace.yaml`).
+### Toolchain
+
+- **mise** instala Java y la CLI nativa de Vite+ (`vp`). El registro de mise solo tiene la versión npm de `vp`,
+  que no incluye la CLI completa ([vite-plus#943](https://github.com/voidzero-dev/vite-plus/issues/943)). Por eso
+  se usa el plugin de la comunidad [mise-vite-plus](https://github.com/markmals/mise-vite-plus), declarado en
+  `mise.toml`. Al instalarlo crea `~/.vite-plus/`.
+- **`vp`** gestiona Node y pnpm con las versiones de `devEngines` en `frontend/package.json`, y delega en el
+  paquete `vite-plus` local del frontend (versión fijada en `frontend/pnpm-workspace.yaml`).
+- Las tareas de mise solo usan `vp`. Si quieres `node` o `pnpm` sueltos en tu shell, carga los shims de Vite+
+  (`source ~/.vite-plus/env.fish`, o `env` para bash/zsh) o usa `vp env exec node ...`.
 
 ## Estructura
 
