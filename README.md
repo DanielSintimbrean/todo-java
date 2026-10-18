@@ -2,6 +2,8 @@
 
 Proyecto de aprendizaje de Java moderno: TODO app full-stack.
 
+Para recrearlo desde cero, sigue el [tutorial por etapas en docs/](docs/README.md). Empieza con la configuración mínima, los hello world y una primera petición con `fetch`, y avanza hasta la aplicación completa.
+
 - **Backend:** Java 25 + Spring Boot 4 (Spring MVC, virtual threads), Maven, Spring Data JPA, Flyway, PostgreSQL
 - **Contrato:** springdoc → `backend/openapi.json` (versionado) → Hey API (`@hey-api/openapi-ts`)
 - **Frontend:** React + TypeScript + Vite+ (`vp`), TanStack Router + Query, cliente generado con Hey API, Tailwind + shadcn/ui (sobre Base UI)
