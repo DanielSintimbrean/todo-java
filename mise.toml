@@ -2,3 +2,72 @@
 java = "temurin-25"
 node = "lts"
 pnpm = "latest"
+
+[env]
+# Dentro del repo, `vp` resuelve al vite-plus local del frontend (versión fijada en
+# frontend/pnpm-workspace.yaml) en lugar de al vp global, que usaría su propio Vitest.
+_.path = ["{{config_root}}/frontend/node_modules/.bin"]
+
+# ---------------------------------------------------------------------------
+# Tareas: `mise tasks` las lista, `mise run <tarea>` las ejecuta.
+# ---------------------------------------------------------------------------
+
+[tasks.install]
+description = "Instala las dependencias del frontend"
+dir = "frontend"
+run = "vp install"
+
+[tasks."dev:backend"]
+description = "Arranca el backend en :8080 (levanta Postgres con docker compose)"
+dir = "backend"
+run = "./mvnw spring-boot:run"
+
+[tasks."dev:frontend"]
+description = "Arranca el dev server de Vite+ en :5173 (/api va al backend)"
+dir = "frontend"
+depends = ["install"]
+run = "vp dev"
+
+[tasks.dev]
+description = "Backend + frontend en paralelo"
+depends = ["dev:backend", "dev:frontend"]
+
+[tasks."test:backend"]
+description = "Tests del backend (Testcontainers; también regenera backend/openapi.json)"
+dir = "backend"
+run = "./mvnw -B test"
+
+[tasks."test:frontend"]
+description = "Tests del frontend con vp test"
+dir = "frontend"
+depends = ["install"]
+run = "vp test"
+
+[tasks.test]
+description = "Todos los tests"
+depends = ["test:backend", "test:frontend"]
+
+[tasks."api:generate"]
+description = "Regenera backend/openapi.json desde los tests y los tipos TS del cliente"
+depends = ["install"]
+run = [
+  "cd backend && ./mvnw -B -q test -Dtest=OpenApiDocumentTest",
+  "cd frontend && vp run api:generate",
+]
+
+[tasks."db:down"]
+description = "Para el Postgres de desarrollo (los datos se conservan en el volumen)"
+run = "docker compose down"
+
+[tasks.check]
+description = "Lo que correría CI: tests, check, build y contrato del API al día"
+run = [
+  "cd frontend && vp install --frozen-lockfile",
+  "cd backend && ./mvnw -B verify",
+  "cd frontend && vp run api:generate",
+  "cd frontend && vp check",
+  "cd frontend && vp test",
+  "cd frontend && vp build",
+  # Si falla, hay ficheros generados que no se han commiteado (ejecuta `mise run api:generate`).
+  "git diff --exit-code -- backend/openapi.json frontend/src/api/schema.d.ts frontend/src/routeTree.gen.ts",
+]
