@@ -1,0 +1,16 @@
+# Postgres para desarrollo local. No hace falta levantarlo a mano:
+# spring-boot-docker-compose lo arranca al ejecutar el backend (ver application.properties).
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: todo
+      POSTGRES_USER: todo
+      POSTGRES_PASSWORD: todo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+
+volumes:
+  postgres-data:

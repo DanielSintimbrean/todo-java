@@ -1,0 +1,4 @@
+[tools]
+java = "temurin-25"
+node = "lts"
+pnpm = "latest"
