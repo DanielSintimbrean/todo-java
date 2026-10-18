@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { $api, type TodoStatus } from "@/api/client";
 import { NewTodoForm } from "@/components/new-todo-form";
 import { TodoItem } from "@/components/todo-item";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -51,16 +51,17 @@ function TodosPage() {
         <NewTodoForm />
         <nav className="flex items-center gap-1">
           {filterLinks.map((link) => (
-            <Button key={link.label} variant="ghost" size="sm" asChild>
-              <Link
-                to="/"
-                search={{ filter: link.filter }}
-                activeOptions={{ includeSearch: true }}
-                activeProps={{ className: "bg-muted" }}
-              >
-                {link.label}
-              </Link>
-            </Button>
+            // Son navegación, así que son <Link> (enlaces reales) con estilo de botón.
+            <Link
+              key={link.label}
+              to="/"
+              search={{ filter: link.filter }}
+              className={buttonVariants({ variant: "ghost", size: "sm" })}
+              activeOptions={{ includeSearch: true }}
+              activeProps={{ className: "bg-muted" }}
+            >
+              {link.label}
+            </Link>
           ))}
           {isFetching && <Spinner className="ml-auto text-muted-foreground" />}
         </nav>
