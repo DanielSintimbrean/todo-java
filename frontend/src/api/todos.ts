@@ -1,24 +1,35 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { $api, type Todo, todosQueryKey } from "./client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Todo } from "./client";
+import {
+  createTodoMutation,
+  deleteTodoMutation,
+  listTodosQueryKey,
+  toggleTodoMutation,
+  updateTodoMutation,
+} from "./generated/@tanstack/react-query.gen";
+
+// Sin argumentos, la key de `listTodos` es prefijo de todas sus variantes de filtro:
+// TanStack Query compara las keys por coincidencia parcial.
+const allTodosQueryKey = listTodosQueryKey();
 
 function useInvalidateTodos() {
   const queryClient = useQueryClient();
-  return () => queryClient.invalidateQueries({ queryKey: todosQueryKey });
+  return () => queryClient.invalidateQueries({ queryKey: allTodosQueryKey });
 }
 
 export function useCreateTodo() {
   const invalidate = useInvalidateTodos();
-  return $api.useMutation("post", "/api/todos", { onSettled: invalidate });
+  return useMutation({ ...createTodoMutation(), onSettled: invalidate });
 }
 
 export function useUpdateTodo() {
   const invalidate = useInvalidateTodos();
-  return $api.useMutation("patch", "/api/todos/{id}", { onSettled: invalidate });
+  return useMutation({ ...updateTodoMutation(), onSettled: invalidate });
 }
 
 export function useDeleteTodo() {
   const invalidate = useInvalidateTodos();
-  return $api.useMutation("delete", "/api/todos/{id}", { onSettled: invalidate });
+  return useMutation({ ...deleteTodoMutation(), onSettled: invalidate });
 }
 
 /**
@@ -28,13 +39,14 @@ export function useDeleteTodo() {
  */
 export function useToggleTodo() {
   const queryClient = useQueryClient();
-  return $api.useMutation("post", "/api/todos/{id}/toggle", {
-    onMutate: async ({ params }) => {
-      await queryClient.cancelQueries({ queryKey: todosQueryKey });
-      const previous = queryClient.getQueriesData<Todo[]>({ queryKey: todosQueryKey });
-      queryClient.setQueriesData<Todo[]>({ queryKey: todosQueryKey }, (todos) =>
+  return useMutation({
+    ...toggleTodoMutation(),
+    onMutate: async ({ path }) => {
+      await queryClient.cancelQueries({ queryKey: allTodosQueryKey });
+      const previous = queryClient.getQueriesData<Todo[]>({ queryKey: allTodosQueryKey });
+      queryClient.setQueriesData<Todo[]>({ queryKey: allTodosQueryKey }, (todos) =>
         todos?.map((todo) =>
-          todo.id === params.path.id ? { ...todo, completed: !todo.completed } : todo,
+          todo.id === path.id ? { ...todo, completed: !todo.completed } : todo,
         ),
       );
       return { previous };
@@ -44,6 +56,6 @@ export function useToggleTodo() {
         queryClient.setQueryData(queryKey, data);
       }
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: todosQueryKey }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: allTodosQueryKey }),
   });
 }

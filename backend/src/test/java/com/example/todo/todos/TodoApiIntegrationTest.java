@@ -112,9 +112,17 @@ class TodoApiIntegrationTest {
     void deletesTodo() {
         TodoResponse created = create("Delete me");
 
-        client.delete().uri("/api/todos/{id}", created.id()).exchange().expectStatus().isNoContent();
+        client.delete()
+                .uri("/api/todos/{id}", created.id())
+                .exchange()
+                .expectStatus()
+                .isNoContent();
 
-        client.get().uri("/api/todos/{id}", created.id()).exchange().expectStatus().isNotFound();
+        client.get()
+                .uri("/api/todos/{id}", created.id())
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 
     @Test

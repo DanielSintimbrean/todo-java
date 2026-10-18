@@ -38,7 +38,7 @@ export function TodoItem({ todo }: { todo: Todo }) {
     }
     // Mandamos la versión que estamos viendo: si alguien lo cambió antes, el backend responde 409.
     updateTodo.mutate(
-      { params: { path }, body: { title: draft, version: todo.version } },
+      { path, body: { title: draft, version: todo.version } },
       { onSuccess: () => setDraft(null) },
     );
   }
@@ -48,7 +48,7 @@ export function TodoItem({ todo }: { todo: Todo }) {
       <div className="flex items-center gap-3">
         <Checkbox
           checked={todo.completed}
-          onCheckedChange={() => toggleTodo.mutate({ params: { path } })}
+          onCheckedChange={() => toggleTodo.mutate({ path })}
           aria-label={`Marcar "${todo.title}" como ${todo.completed ? "pendiente" : "completado"}`}
         />
         {draft === null ? (
@@ -83,7 +83,7 @@ export function TodoItem({ todo }: { todo: Todo }) {
         <Button
           variant="ghost"
           size="icon-sm"
-          onClick={() => deleteTodo.mutate({ params: { path } })}
+          onClick={() => deleteTodo.mutate({ path })}
           disabled={deleteTodo.isPending}
           aria-label={`Borrar "${todo.title}"`}
         >

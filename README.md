@@ -3,8 +3,8 @@
 Proyecto de aprendizaje de Java moderno: TODO app full-stack.
 
 - **Backend:** Java 25 + Spring Boot 4 (Spring MVC, virtual threads), Maven, Spring Data JPA, Flyway, PostgreSQL
-- **Contrato:** springdoc → `backend/openapi.json` (versionado) → openapi-typescript
-- **Frontend:** React + TypeScript + Vite+ (`vp`), TanStack Router + Query, openapi-fetch + openapi-react-query, Tailwind + shadcn/ui (sobre Base UI)
+- **Contrato:** springdoc → `backend/openapi.json` (versionado) → Hey API (`@hey-api/openapi-ts`)
+- **Frontend:** React + TypeScript + Vite+ (`vp`), TanStack Router + Query, cliente generado con Hey API, Tailwind + shadcn/ui (sobre Base UI)
 - **Tooling:** mise (Java y `vp`) + Vite+ (Node y pnpm)
 
 ## Arrancar
@@ -26,8 +26,9 @@ Swagger UI: http://localhost:8080/swagger-ui.html
 | --- | --- |
 | `mise run dev` | Backend y frontend en paralelo (`dev:backend` y `dev:frontend` por separado) |
 | `mise run test` | Tests de backend (JUnit + Testcontainers) y frontend (`vp test`) |
-| `mise run api:generate` | Regenera `backend/openapi.json` desde un test y `frontend/src/api/schema.d.ts` a partir de él |
-| `mise run check` | Lo que correría CI: `mvnw verify`, `vp check`, `vp test`, `vp build` y `git diff --exit-code` sobre los ficheros generados |
+| `mise run api:generate` | Regenera `backend/openapi.json` desde un test y el cliente de `frontend/src/api/generated/` a partir de él |
+| `mise run fmt` | Formatea el backend (Spotless + palantir-java-format) y el frontend (`vp fmt`) |
+| `mise run check` | Lo que correría CI: `mvnw verify` (tests y `spotless:check`), `vp check`, `vp test`, `vp build` y `git diff --exit-code` sobre los ficheros generados |
 
 ### Toolchain
 
@@ -49,7 +50,7 @@ backend/src/main/java/com/example/todo/
 backend/src/main/resources/db/migration/   migraciones de Flyway (SQL a mano)
 backend/openapi.json                       contrato del API, generado por OpenApiDocumentTest
 frontend/src/
-  api/       cliente tipado ($api), hooks de mutación y schema.d.ts generado
+  api/       configuración del cliente, hooks de mutación y generated/ (cliente generado por Hey API)
   routes/    rutas de TanStack Router (file-based)
   components/ componentes de la app y, en ui/, los de shadcn
 ```
@@ -59,8 +60,9 @@ frontend/src/
 1. Cambia el backend (controller, DTOs...).
 2. `mise run api:generate`: el test [`OpenApiDocumentTest`](backend/src/test/java/com/example/todo/OpenApiDocumentTest.java)
    arranca la app contra un Postgres de Testcontainers, pide `/v3/api-docs` y escribe `openapi.json`.
-   Después, openapi-typescript genera los tipos del frontend.
-3. TypeScript te dirá qué parte del frontend se ha roto. Commitea `openapi.json` y `schema.d.ts` con el cambio:
+   Después, Hey API ([`openapi-ts.config.ts`](frontend/openapi-ts.config.ts)) genera tipos, cliente fetch y
+   helpers de TanStack Query (`listTodosOptions`, `createTodoMutation`...); sus nombres salen del `operationId`.
+3. TypeScript te dirá qué parte del frontend se ha roto. Commitea `openapi.json` y `src/api/generated/` con el cambio:
    `mise run check` falla si no coinciden con el código.
 
 ### Decisiones
@@ -74,8 +76,19 @@ frontend/src/
   [`ApiProblem`](backend/src/main/java/com/example/todo/web/ApiProblem.java).
 - **Versiones:** Spring Boot 4.1.1 con springdoc-openapi 3.1.1 (la línea 3.x es la de Boot 4; la 3.1 está
   construida contra Boot 4.1).
+- **Formato Java:** [Spotless](https://github.com/diffplug/spotless) con
+  [palantir-java-format](https://github.com/palantir/palantir-java-format) (4 espacios, líneas de 120), configurado en
+  `backend/pom.xml`. Es el equivalente a `vp fmt`/`vp check`: `./mvnw spotless:apply` formatea y
+  `spotless:check` (enlazado a `verify`) falla si algo no está formateado. Para que IntelliJ formatee igual, instala
+  el plugin *palantir-java-format*.
 - **JUnit:** Spring Boot 4.1 gestiona JUnit **6** (Jupiter), no JUnit 5. La API de Jupiter es la misma
   (`@Test`, `@BeforeEach`...), así que se usa la versión que trae Boot en vez de forzar una anterior.
+- **Cliente del API y TypeScript 7:** se usa Hey API porque openapi-typescript está en modo mantenimiento
+  ([#2874](https://github.com/openapi-ts/openapi-typescript/issues/2874)) y no funciona con TypeScript 7, que ya
+  no expone la API JS del compilador. La versión estable de Hey API (0.99.0) tampoco funciona con TS 7
+  ([hey-api#4235](https://github.com/hey-api/hey-api/issues/4235)); la prerelease
+  `0.0.0-next-20260930190945` elimina la dependencia de TypeScript, así que está fijada esa hasta que salga
+  una estable con el cambio.
 
 ## Notas para quien viene de C#/EF
 

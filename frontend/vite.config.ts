@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig, lazyPlugins } from "vite-plus";
 
 // Ficheros generados: no se formatean ni se lintan a mano.
-const generated = ["src/api/schema.d.ts", "src/routeTree.gen.ts"];
+const generated = ["src/api/generated/**", "src/routeTree.gen.ts"];
 
 // https://viteplus.dev/config/
 export default defineConfig({

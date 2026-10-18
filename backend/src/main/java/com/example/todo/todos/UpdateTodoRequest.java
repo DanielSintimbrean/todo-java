@@ -14,7 +14,12 @@ import org.jspecify.annotations.Nullable;
  */
 public record UpdateTodoRequest(
         // Como @NotBlank, pero dejando pasar null (= no cambiar el título). Reutiliza su mensaje traducido.
-        @Nullable @Size(max = 200) @Pattern(regexp = ".*\\S.*", message = "{jakarta.validation.constraints.NotBlank.message}")
-                String title,
+        @Nullable
+        @Size(max = 200)
+        @Pattern(regexp = ".*\\S.*", message = "{jakarta.validation.constraints.NotBlank.message}")
+        String title,
+
         @Nullable Boolean completed,
-        @NotNull @Schema(description = "Versión del TODO que el cliente está editando") Long version) {}
+
+        @NotNull @Schema(description = "Versión del TODO que el cliente está editando")
+        Long version) {}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
-import { fetchClient } from "./client";
+import "./client";
+import { listTodos } from "./generated";
 import { toProblem } from "./problem";
 
 describe("toProblem", () => {
@@ -17,11 +18,11 @@ describe("toProblem", () => {
   });
 });
 
-describe("fetchClient", () => {
+describe("API client", () => {
   it("turns non-JSON error responses into a ProblemDetail", async () => {
     const fetch = async () => new Response("", { status: 502, statusText: "Bad Gateway" });
 
-    const { error } = await fetchClient.GET("/api/todos", { baseUrl: "http://localhost", fetch });
+    const { error } = await listTodos({ baseUrl: "http://localhost", fetch });
 
     expect(error).toEqual({ type: "about:blank", title: "Bad Gateway", status: 502 });
   });

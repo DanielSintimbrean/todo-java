@@ -18,6 +18,8 @@
 		<java.version>25</java.version>
 		<!-- springdoc 3.x es la línea para Spring Boot 4; 3.1.x está construida contra Boot 4.1 -->
 		<springdoc.version>3.1.1</springdoc.version>
+		<spotless.version>3.10.4</spotless.version>
+		<palantir-java-format.version>2.102.0</palantir-java-format.version>
 	</properties>
 
 	<dependencies>
@@ -106,6 +108,30 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<!--
+				Formateo del código Java (el equivalente a `vp fmt` / `vp check` del frontend):
+				  ./mvnw spotless:apply   formatea
+				  ./mvnw spotless:check   falla si algo no está formateado (se ejecuta en `verify`)
+			-->
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>${spotless.version}</version>
+				<configuration>
+					<java>
+						<palantirJavaFormat>
+							<version>${palantir-java-format.version}</version>
+						</palantirJavaFormat>
+					</java>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

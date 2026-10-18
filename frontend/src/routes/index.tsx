@@ -1,5 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { $api, type TodoStatus } from "@/api/client";
+import type { TodoStatus } from "@/api/client";
+import { listTodosOptions } from "@/api/generated/@tanstack/react-query.gen";
 import { NewTodoForm } from "@/components/new-todo-form";
 import { TodoItem } from "@/components/todo-item";
 import { buttonVariants } from "@/components/ui/button";
@@ -25,8 +27,8 @@ const filterLinks = [
 ] as const;
 
 // Mismos parámetros en el loader y en el componente, así comparten la entrada de caché.
-function listParams(filter: Filter | undefined) {
-  return { params: { query: { status: filter && statusByFilter[filter] } } };
+function listOptions(filter: Filter | undefined) {
+  return listTodosOptions({ query: { status: filter && statusByFilter[filter] } });
 }
 
 export const Route = createFileRoute("/")({
@@ -34,16 +36,13 @@ export const Route = createFileRoute("/")({
     search.filter === "active" || search.filter === "completed" ? { filter: search.filter } : {},
   loaderDeps: ({ search }) => ({ filter: search.filter }),
   // Precarga los datos antes de pintar la ruta; si ya están en caché, no hace petición.
-  loader: ({ context, deps }) =>
-    context.queryClient.ensureQueryData(
-      $api.queryOptions("get", "/api/todos", listParams(deps.filter)),
-    ),
+  loader: ({ context, deps }) => context.queryClient.ensureQueryData(listOptions(deps.filter)),
   component: TodosPage,
 });
 
 function TodosPage() {
   const { filter } = Route.useSearch();
-  const { data: todos = [], isFetching } = $api.useQuery("get", "/api/todos", listParams(filter));
+  const { data: todos = [], isFetching } = useQuery(listOptions(filter));
 
   return (
     <Card>

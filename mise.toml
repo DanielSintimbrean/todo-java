@@ -57,6 +57,14 @@ run = [
   "cd frontend && vp run api:generate",
 ]
 
+[tasks.fmt]
+description = "Formatea el código: backend con Spotless (palantir-java-format) y frontend con vp fmt"
+depends = ["install"]
+run = [
+  "cd backend && ./mvnw -B -q spotless:apply",
+  "cd frontend && vp fmt",
+]
+
 [tasks."db:down"]
 description = "Para el Postgres de desarrollo (los datos se conservan en el volumen)"
 run = "docker compose down"
@@ -65,11 +73,12 @@ run = "docker compose down"
 description = "Lo que correría CI: tests, check, build y contrato del API al día"
 run = [
   "cd frontend && vp install --frozen-lockfile",
+  # `verify` también ejecuta spotless:check (formato del código Java).
   "cd backend && ./mvnw -B verify",
   "cd frontend && vp run api:generate",
   "cd frontend && vp check",
   "cd frontend && vp test",
   "cd frontend && vp build",
   # Si falla, hay ficheros generados que no se han commiteado (ejecuta `mise run api:generate`).
-  "git diff --exit-code -- backend/openapi.json frontend/src/api/schema.d.ts frontend/src/routeTree.gen.ts",
+  "git diff --exit-code -- backend/openapi.json frontend/src/api/generated frontend/src/routeTree.gen.ts",
 ]

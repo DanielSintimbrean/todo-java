@@ -19,5 +19,9 @@ public record ApiProblem(
         @NotNull int status,
         @Nullable String detail,
         @Nullable String instance,
-        @Schema(description = "Errores de validación por campo (solo en 400)") @Nullable Map<String, String> errors,
-        @Schema(description = "Versión actual del recurso (solo en 409)") @Nullable Long currentVersion) {}
+
+        @Schema(description = "Errores de validación por campo (solo en 400)") @Nullable
+        Map<String, String> errors,
+
+        @Schema(description = "Versión actual del recurso (solo en 409)") @Nullable
+        Long currentVersion) {}

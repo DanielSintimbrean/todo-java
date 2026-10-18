@@ -4,6 +4,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouteError, RoutePending } from "./components/route-states";
 import "./index.css";
+// Configura el cliente generado del API (interceptor que normaliza errores a ProblemDetail).
+import "./api/client";
 import { routeTree } from "./routeTree.gen";
 
 const queryClient = new QueryClient();
