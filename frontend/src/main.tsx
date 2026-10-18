@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { RouteError, RoutePending } from "./components/route-states";
 import "./index.css";
 import { routeTree } from "./routeTree.gen";
 
@@ -13,6 +14,8 @@ const router = createRouter({
   defaultPreload: "intent",
   // La caché la gestiona TanStack Query, no el router.
   defaultPreloadStaleTime: 0,
+  defaultPendingComponent: RoutePending,
+  defaultErrorComponent: RouteError,
 });
 
 // Registra el router para que <Link>, useSearch, etc. estén tipados con nuestras rutas.

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
+import { fetchClient } from "./client";
 import { toProblem } from "./problem";
 
 describe("toProblem", () => {
@@ -14,11 +15,14 @@ describe("toProblem", () => {
       detail: "Failed to fetch",
     });
   });
+});
 
-  it("uses plain text bodies as detail", () => {
-    expect(toProblem("Bad Gateway")).toMatchObject({
-      title: "Unexpected error",
-      detail: "Bad Gateway",
-    });
+describe("fetchClient", () => {
+  it("turns non-JSON error responses into a ProblemDetail", async () => {
+    const fetch = async () => new Response("", { status: 502, statusText: "Bad Gateway" });
+
+    const { error } = await fetchClient.GET("/api/todos", { baseUrl: "http://localhost", fetch });
+
+    expect(error).toEqual({ type: "about:blank", title: "Bad Gateway", status: 502 });
   });
 });

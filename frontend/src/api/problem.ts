@@ -1,21 +1,18 @@
 import type { Problem } from "./client";
 
 /**
- * openapi-fetch devuelve como error el body ya parseado: normalmente un ProblemDetail del backend,
- * pero puede ser texto (p. ej. un 502 del proxy si el backend no está arrancado) o un Error de red.
+ * Normaliza lo que llega como `error` a TanStack Query: un ProblemDetail del API
+ * (ver problemMiddleware en client.ts) o un Error si la petición ni siquiera llegó a hacerse.
  */
 export function toProblem(error: unknown): Problem {
   if (isProblem(error)) {
     return error;
   }
-  if (error instanceof Error) {
-    return { type: "about:blank", title: "Network error", status: 0, detail: error.message };
-  }
   return {
     type: "about:blank",
-    title: "Unexpected error",
+    title: error instanceof Error ? "Network error" : "Unexpected error",
     status: 0,
-    detail: typeof error === "string" && error !== "" ? error : undefined,
+    detail: error instanceof Error ? error.message : undefined,
   };
 }
 
