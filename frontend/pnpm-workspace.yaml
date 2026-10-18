@@ -8,3 +8,5 @@ peerDependencyRules:
     - vite
   allowedVersions:
     vite: "*"
+# `vp add` guarda versiones exactas (sin ^ ni ~).
+saveExact: true
